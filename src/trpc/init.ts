@@ -1,4 +1,6 @@
-import { initTRPC } from '@trpc/server';
+import { auth } from '@/lib/auth';
+import { initTRPC, TRPCError } from '@trpc/server';
+import { headers } from 'next/headers';
 import { cache } from 'react';
  
 export const createTRPCContext = cache(async () => { // cache() from react memoizes, so function only runs once per request
@@ -24,5 +26,19 @@ export const createTRPCRouter = t.router; // container that groups endpoints tog
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure; // baseProdcedure is starting block for building endpoints
 // for protected routes, it would look like the following:
-// const protectedProcedure = baseProcedure.use(()=> {//check auth logic here, return true or false})
+// const protectedProcedure = baseProcedure.use(())=> {//check auth logic here, return true or false})
 // use the above in _app.ts
+export const protectedProcedure = baseProcedure.use(async ({ctx, next})=>{
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  if(!session){
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Unauthorized",
+    })
+  }
+
+  return next({ctx: {...ctx, auth: session}});
+})
