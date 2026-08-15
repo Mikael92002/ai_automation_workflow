@@ -25,9 +25,8 @@ const t = initTRPC.create({ // creates internal tRPC builder instance t.
 export const createTRPCRouter = t.router; // container that groups endpoints together
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure; // baseProdcedure is starting block for building endpoints
+
 // for protected routes, it would look like the following:
-// const protectedProcedure = baseProcedure.use(())=> {//check auth logic here, return true or false})
-// use the above in _app.ts
 export const protectedProcedure = baseProcedure.use(async ({ctx, next})=>{
   const session = await auth.api.getSession({
     headers: await headers(),
