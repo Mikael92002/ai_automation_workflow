@@ -36,8 +36,8 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
         <TRPCReactProvider>
-          {children}
           <Toaster></Toaster>
+          {children}
         </TRPCReactProvider>
       </body>
     </html>
